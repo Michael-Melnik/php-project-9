@@ -1,2 +1,2 @@
 <?php
-    phpinfo(INFO_ALL);
+phpinfo(INFO_ALL);
