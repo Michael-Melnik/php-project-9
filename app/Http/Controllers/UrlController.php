@@ -11,7 +11,14 @@ class UrlController extends Controller
     public function showAll()
     {
         $urls = DB::table('urls')->paginate(10);
-        return view('urls', compact('urls'));
+        $lastChek = DB::table('url_checks')
+            ->orderBy('url_id')
+            ->latest()
+            ->distinct('url_id')
+            ->get()
+            ->keyBy('url_id');
+
+        return view('urls', compact('urls', 'lastChek'));
     }
     public function store(Request $request)
     {
@@ -39,6 +46,18 @@ class UrlController extends Controller
     public function show(int $id)
     {
         $url = DB::table('urls')->find($id);
-        return view('show', ['url' => $url]);
+        $checks = DB::table('url_checks')->where('url_id', $id)->orderBy('id', 'desc')->get();
+        return view('show', ['url' => $url, 'checks' => $checks]);
+    }
+    public function check(Request $request, int $id)
+    {
+
+        DB::table('url_checks')->insert([
+                'url_id' => $id,
+                'created_at' => Carbon::now()]);
+
+        flash('Страница успешно проверена')->success();
+
+        return redirect()->route('url.show', [$id]);
     }
 }

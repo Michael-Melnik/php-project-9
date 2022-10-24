@@ -20,6 +20,4 @@ Route::get('/', function () {
 Route::post('/urls', [UrlController::class, 'store'])->name('url.store');
 Route::get('/urls/{id}', [UrlController::class, 'show'])->name('url.show');
 Route::get('/urls', [UrlController::class, 'showAll'])->name('url.showAll');
-//Route::resource('url', 'UrlController')->only([
-//    'showAll', 'show', 'store'
-//]);
+Route::post('/urls/{id}/checks', [UrlController::class, 'check'])->name('url.check');
