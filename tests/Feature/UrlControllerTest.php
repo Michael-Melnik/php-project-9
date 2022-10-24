@@ -70,7 +70,7 @@ class UrlControllerTest extends TestCase
         $response->assertSee($nameUrl);
         $response->assertViewIs('show');
     }
-    public function test_example()
+    public function testExample()
     {
         $response = $this->get('/');
 
