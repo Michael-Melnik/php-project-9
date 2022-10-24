@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-//use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Carbon\Carbon;
@@ -33,7 +32,7 @@ class UrlControllerTest extends TestCase
         $response->assertOk();
         $response->assertViewIs('urls');
     }
-//
+
     public function testStore()
     {
         $data = ['url' => ['name' => "https://www.PrevedMedved.ru"]];
@@ -42,7 +41,7 @@ class UrlControllerTest extends TestCase
         $response->assertSessionHasNoErrors();
         $this->assertDatabaseHas('urls', ['name' => 'https://www.prevedmedved.ru']);
     }
-//
+
     public function testStoreInvalid()
     {
         $data = ['url' => ['name' => "yandex"]];
@@ -51,7 +50,7 @@ class UrlControllerTest extends TestCase
         $response->assertSessionHasErrors();
         $this->assertDatabaseMissing('urls', ['name' => "yandex"]);
     }
-//
+
     public function testStoreValidExistsToDataBase()
     {
         $id = DB::table('urls')->where('name', 'https://www.yandex.ru')->value('id');
@@ -60,7 +59,7 @@ class UrlControllerTest extends TestCase
         $response->assertSessionHasNoErrors();
         $this->assertDatabaseHas('urls', ['name' => 'https://www.yandex.ru']);
     }
-//
+
     public function testShow()
     {
         $id = DB::table('urls')->where('id', $this->id)->value('id');
