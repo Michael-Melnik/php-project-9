@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UrlController;
+use Illuminate\Support\Facades\Http;
 
 class UrlControllerTest extends TestCase
 {
@@ -26,7 +27,7 @@ class UrlControllerTest extends TestCase
         $response->assertOk();
     }
 
-    public function testIndex()
+    public function testShowAll()
     {
         $response = $this->get(route('url.showAll'));
         $response->assertOk();
@@ -68,6 +69,25 @@ class UrlControllerTest extends TestCase
         $nameUrl = DB::table('urls')->find($id)->name;
         $response->assertSee($nameUrl);
         $response->assertViewIs('show');
+    }
+    public function testCheck()
+    {
+        $testHtml = file_get_contents(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', "Fixtures", 'test.html']));
+
+        Http::fake(['https://www.yandex.ru' => Http::response($testHtml, 200)]);
+
+        $expectedData = [
+            'h1' => 'Проанализировать страницу',
+            'title' => 'Анализатор страниц',
+            'description' => 'Description',
+            'url_id' => $this->id,
+            'status_code' => 200
+        ];
+
+        $response = $this->post(route('url.check', $this->id));
+        $response->assertStatus(302);
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('url_checks', $expectedData);
     }
     public function testExample()
     {

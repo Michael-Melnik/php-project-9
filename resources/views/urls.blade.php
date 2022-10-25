@@ -9,6 +9,7 @@
                     <th>ID</th>
                     <th>Имя</th>
                     <th>Последняя проверка</th>
+                    <th>Код ответа</th>
                 </tr>
                 @foreach ($urls as $url)
 
@@ -16,6 +17,7 @@
                         <td>{{ $url->id }}</td>
                         <td><a href="{{ route('url.show', ['id' => $url->id]) }}">{{ $url->name }}</a></td>
                         <td>{{ $lastChek[$url->id]->created_at ?? '' }}</td>
+                        <td>{{ $lastChek[$url->id]->status_code ?? '' }}</td>
                     </tr>
                 @endforeach
             </table>

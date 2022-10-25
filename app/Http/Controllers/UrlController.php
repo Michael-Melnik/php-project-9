@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use DiDom\Document;
+use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class UrlController extends Controller
 {
@@ -51,13 +54,25 @@ class UrlController extends Controller
     }
     public function check(Request $request, int $id)
     {
+        $url = DB::table('urls')->find($id);
 
-        DB::table('url_checks')->insert([
-                'url_id' => $id,
-                'created_at' => Carbon::now()]);
-
-        flash('Страница успешно проверена')->success();
-
-        return redirect()->route('url.show', [$id]);
+        try {
+            $response = Http::get($url->name);
+            $status = $response->status();
+            $document = new Document($response->body());
+            $h1 = optional($document->first('h1'))->text();
+            $title = optional($document->first('title'))->text();
+            $description = optional($document->first('meta[name=description]'))->getAttribute('content');
+            DB::table('url_checks')->insert([
+                'url_id' => $id, 'status_code' => $status,
+                'title' => $title, 'h1' => $h1,
+                'description' => $description,
+                'created_at' => Carbon::now()->toDateTimeString()
+            ]);
+            flash('Страница успешно проверена')->success();
+        } catch (HttpClientException $exception) {
+            $request->session()->flash('message', $exception->getMessage());
+        }
+        return redirect()->route('url.show', ['id' => $id]);
     }
 }
