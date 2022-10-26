@@ -24,7 +24,7 @@
                     <a class="nav-link" href="{{ route('home') }}">Главная</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('url.showAll') }}">Сайты</a>
+                    <a class="nav-link" href="{{ route('urls.index') }}">Сайты</a>
                 </li>
             </ul>
         </div>

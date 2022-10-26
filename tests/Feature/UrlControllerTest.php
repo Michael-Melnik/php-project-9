@@ -23,13 +23,13 @@ class UrlControllerTest extends TestCase
 
     public function testUrlsRequest()
     {
-        $response = $this->get(route('url.showAll'));
+        $response = $this->get(route('urls.index'));
         $response->assertOk();
     }
 
-    public function testShowAll()
+    public function testIndex()
     {
-        $response = $this->get(route('url.showAll'));
+        $response = $this->get(route('urls.index'));
         $response->assertOk();
         $response->assertViewIs('urls');
     }
@@ -37,16 +37,17 @@ class UrlControllerTest extends TestCase
     public function testStore()
     {
         $data = ['url' => ['name' => "https://www.PrevedMedved.ru"]];
-        $response = $this->post(route('url.store'), $data);
-        $response->assertRedirect();
+        $response = $this->post(route('urls.store'), $data);
+
         $response->assertSessionHasNoErrors();
+        $response->assertRedirect();
         $this->assertDatabaseHas('urls', ['name' => 'https://www.prevedmedved.ru']);
     }
 
     public function testStoreInvalid()
     {
         $data = ['url' => ['name' => "yandex"]];
-        $response = $this->post(route('url.store'), $data);
+        $response = $this->post(route('urls.store'), $data);
         $response->assertRedirect();
         $response->assertSessionHasErrors();
         $this->assertDatabaseMissing('urls', ['name' => "yandex"]);
@@ -55,8 +56,8 @@ class UrlControllerTest extends TestCase
     public function testStoreValidExistsToDataBase()
     {
         $id = DB::table('urls')->where('name', 'https://www.yandex.ru')->value('id');
-        $response = $this->post(route('url.store'), ['url' => ['name' => "https://www.yandex.ru"]]);
-        $response->assertRedirect(route('url.show', ['id' => $id]));
+        $response = $this->post(route('urls.store'), ['url' => ['name' => "https://www.yandex.ru"]]);
+        $response->assertRedirect(route('urls.show', ['url' => $id]));
         $response->assertSessionHasNoErrors();
         $this->assertDatabaseHas('urls', ['name' => 'https://www.yandex.ru']);
     }
@@ -64,7 +65,7 @@ class UrlControllerTest extends TestCase
     public function testShow()
     {
         $id = DB::table('urls')->where('id', $this->id)->value('id');
-        $response = $this->get(route('url.show', $id));
+        $response = $this->get(route('urls.show', $id));
         $response->assertOk();
         $nameUrl = DB::table('urls')->find($id)->name;
         $response->assertSee($nameUrl);

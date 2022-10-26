@@ -11,17 +11,17 @@ use Illuminate\Support\Facades\Http;
 
 class UrlController extends Controller
 {
-    public function showAll()
+    public function index()
     {
         $urls = DB::table('urls')->paginate(10);
-        $lastChek = DB::table('url_checks')
+        $lastCheck = DB::table('url_checks')
             ->orderBy('url_id')
             ->latest()
             ->distinct('url_id')
             ->get()
             ->keyBy('url_id');
 
-        return view('urls', compact('urls', 'lastChek'));
+        return view('urls', compact('urls', 'lastCheck'));
     }
     public function store(Request $request)
     {
@@ -31,26 +31,29 @@ class UrlController extends Controller
 
         $parsedUrl = parse_url($request->input('url.name'));
         $normalizeUrl = strtolower("{$parsedUrl['scheme']}://{$parsedUrl['host']}");
-        $url = DB::table('urls')->where('name', $normalizeUrl);
+        $url = DB::table('urls')->where('name', $normalizeUrl)->first();
 
-        if ($url->exists()) {
+        if (isset($url)) {
             flash('Страница уже существует');
-            $id = $url->first()->id;
-        } else {
-            $id = DB::table('urls')->insertGetId([
-                'name' => $normalizeUrl,
-                'created_at' => Carbon::now()->toDateTimeString()
-            ]);
-            flash('Страница успешно добавлена')->success();
+            return redirect()->route('urls.show', $url->id);
         }
-        return redirect()->route('url.show', ['id' => $id]);
+
+        $id = DB::table('urls')
+            ->insertGetId([
+                'name' => $normalizeUrl,
+                "created_at" =>  Carbon::now()->toDateTimeString(),
+            ]);
+
+        flash('Страница успешно добавлена')->success();
+        return redirect()->route('urls.show', $id);
     }
 
     public function show(int $id)
     {
         $url = DB::table('urls')->find($id);
-        $checks = DB::table('url_checks')->where('url_id', $id)->orderBy('id', 'desc')->get();
-        return view('show', ['url' => $url, 'checks' => $checks]);
+        abort_unless($url, 404);
+        $checks = DB::table('url_checks')->where('url_id', $id)->get();
+        return view('show', compact('url', 'checks'));
     }
     public function check(Request $request, int $id)
     {
@@ -73,6 +76,6 @@ class UrlController extends Controller
         } catch (HttpClientException $exception) {
             $request->session()->flash('message', $exception->getMessage());
         }
-        return redirect()->route('url.show', ['id' => $id]);
+        return redirect()->route('urls.show', ['url' => $id]);
     }
 }
