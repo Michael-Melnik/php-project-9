@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use DiDom\Document;
-use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -67,14 +66,17 @@ class UrlController extends Controller
             $title = optional($document->first('title'))->text();
             $description = optional($document->first('meta[name=description]'))->getAttribute('content');
             DB::table('url_checks')->insert([
-                'url_id' => $id, 'status_code' => $status,
-                'title' => $title, 'h1' => $h1,
+                'url_id' => $id,
+                'status_code' => $status,
+                'title' => $title,
+                'h1' => $h1,
                 'description' => $description,
                 'created_at' => Carbon::now()->toDateTimeString()
             ]);
             flash('Страница успешно проверена')->success();
-        } catch (HttpClientException $exception) {
-            $request->session()->flash('message', $exception->getMessage());
+        } catch (\Exception $exception) {
+            flash($exception->getMessage())->error();
+            return back();
         }
         return redirect()->route('urls.show', ['url' => $id]);
     }
