@@ -7,6 +7,7 @@ use DiDom\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class UrlController extends Controller
 {
@@ -62,8 +63,8 @@ class UrlController extends Controller
             $response = Http::get($url->name);
             $status = $response->status();
             $document = new Document($response->body());
-            $h1 = optional($document->first('h1'))->text();
-            $title = optional($document->first('title'))->text();
+            $h1 = Str::limit(optional($document->first('h1'))->text(), 100, '...');
+            $title = Str::limit(optional($document->first('title'))->text(), 100, '...');
             $description = optional($document->first('meta[name=description]'))->getAttribute('content');
             DB::table('url_checks')->insert([
                 'url_id' => $id,
@@ -75,7 +76,7 @@ class UrlController extends Controller
             ]);
             flash('Страница успешно проверена')->success();
         } catch (\Exception $exception) {
-            flash($exception->getMessage())->error();
+            flash('Не удалось выполнить проверку')->error();
             return back();
         }
         return redirect()->route('urls.show', ['url' => $id]);
