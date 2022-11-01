@@ -48,8 +48,6 @@ class UrlControllerTest extends TestCase
     {
         $data = ['url' => ['name' => "yandex"]];
         $response = $this->post(route('urls.store'), $data);
-        $response->assertRedirect();
-        $response->assertSessionHasErrors();
         $this->assertDatabaseMissing('urls', ['name' => "yandex"]);
     }
 

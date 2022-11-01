@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UrlController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,7 +13,6 @@ use App\Http\Controllers\UrlController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 Route::get('/', function () {
     return view('index');
 })->name('home');
