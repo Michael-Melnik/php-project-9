@@ -11,7 +11,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Response;
 
-
 class UrlController extends Controller
 {
     public function index()
@@ -36,7 +35,7 @@ class UrlController extends Controller
 
         if ($validator->fails()) {
             $validator = $validator->errors();
-            return response()->view('index',['validator'=> $validator, 'url' => $request->input('url.name')], 422);
+            return response()->view('index', ['validator' => $validator, 'url' => $request->input('url.name')], 422);
         }
 
         $parsedUrl = parse_url($request->input('url.name'));
