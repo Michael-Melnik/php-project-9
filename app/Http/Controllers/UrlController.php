@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Response;
+
 
 class UrlController extends Controller
 {
@@ -23,11 +26,18 @@ class UrlController extends Controller
 
         return view('urls', compact('urls', 'lastCheck'));
     }
+
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'url.name' => 'required|max:255|min:5|url'
+
+        $validator = Validator::make($request->all(), [
+            'url.name' => 'required|max:255|url'
         ]);
+
+        if ($validator->fails()) {
+            $validator = $validator->errors();
+            return response()->view('index',['validator'=> $validator, 'url' => $request->input('url.name')], 422);
+        }
 
         $parsedUrl = parse_url($request->input('url.name'));
         $normalizeUrl = strtolower("{$parsedUrl['scheme']}://{$parsedUrl['host']}");

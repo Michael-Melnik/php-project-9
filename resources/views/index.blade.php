@@ -1,9 +1,6 @@
 @extends('layouts.app')
 
-
-
 @section('content')
-
     <div class="container-lg mt-3">
             <div class="row">
                 <div class="col-12 col-md-10 col-lg-8 mx-auto border rounded-3 bg-light p-5">
@@ -13,13 +10,12 @@
                         @csrf
                         <div class="col-8">
 
-                                <input type="text" name="url[name]" value="" class="form-control form-control-lg @error('url.name') is-invalid @enderror" placeholder="https://www.example.com">
-                            @error('url.name')
+                                <input type="text" name="url[name]" value="{{$url ?? ''}}" class="form-control form-control-lg @if(isset($validator)) is-invalid @endif" placeholder="https://www.example.com">
+                                @if(isset($validator))
                                 <div class="invalid-feedback">
                                     Некорректный URL
                                 </div>
-                            @enderror
-
+                                @endif
                         </div>
                         <div class="col-2">
                             <input type="submit" class="btn btn-primary btn-lg ms-3 px-5 text-uppercase mx-3" value="Проверить">
@@ -28,7 +24,5 @@
                 </div>
             </div>
         </div>
-
-
 @endsection
 

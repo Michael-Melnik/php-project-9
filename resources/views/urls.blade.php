@@ -1,32 +1,37 @@
 @extends('layouts.app')
 
-@section('content')
-    <div class="container-lg">
-        <h1 class="mt-5 mb-3">Сайты</h1>
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover text-nowrap" data-test="urls">
-                <tr>
-                    <th>ID</th>
-                    <th>Имя</th>
-                    <th>Последняя проверка</th>
-                    <th>Код ответа</th>
-                </tr>
-                @foreach ($urls as $url)
-
+@if($errors->any())
+    @include('index')
+@else
+    @section('content')
+        <div class="container-lg">
+            <h1 class="mt-5 mb-3">Сайты</h1>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover text-nowrap" data-test="urls">
                     <tr>
-                        <td>{{ $url->id }}</td>
-                        <td><a href="{{ route('urls.show', ['url' => $url->id]) }}">{{ $url->name }}</a></td>
-                        <td>{{ $lastCheck[$url->id]->created_at ?? '' }}</td>
-                        <td>{{ $lastCheck[$url->id]->status_code ?? '' }}</td>
+                        <th>ID</th>
+                        <th>Имя</th>
+                        <th>Последняя проверка</th>
+                        <th>Код ответа</th>
                     </tr>
-                @endforeach
-            </table>
-            <nav>
-                <ul class="pagination">
-                    <li>{{ $urls->links() }}</li>
-                </ul>
-            </nav>
+                    @foreach ($urls as $url)
+
+                        <tr>
+                            <td>{{ $url->id }}</td>
+                            <td><a href="{{ route('urls.show', ['url' => $url->id]) }}">{{ $url->name }}</a></td>
+                            <td>{{ $lastCheck[$url->id]->created_at ?? '' }}</td>
+                            <td>{{ $lastCheck[$url->id]->status_code ?? '' }}</td>
+                        </tr>
+                    @endforeach
+                </table>
+                <nav>
+                    <ul class="pagination">
+                        <li>{{ $urls->links() }}</li>
+                    </ul>
+                </nav>
+            </div>
         </div>
-    </div>
-@endsection
+    @endsection
+@endif
+
 
