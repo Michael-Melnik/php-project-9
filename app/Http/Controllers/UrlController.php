@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use DiDom\Document;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class UrlController extends Controller
 {
@@ -25,7 +29,7 @@ class UrlController extends Controller
         return view('urls', compact('urls', 'lastCheck'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse|Response
     {
 
         $validator = Validator::make($request->all(), [
@@ -34,7 +38,7 @@ class UrlController extends Controller
 
         if ($validator->fails()) {
             $validator = $validator->errors();
-            return response()->view('index', ['validator' => $validator, 'url' => $request->input('url.name')], 422);
+            return \response()->view('index', ['validator' => $validator, 'url' => $request->input('url.name')], 422);
         }
 
         $parsedUrl = parse_url($request->input('url.name'));
@@ -83,7 +87,7 @@ class UrlController extends Controller
                 'created_at' => Carbon::now()->toDateTimeString()
             ]);
             flash('Страница успешно проверена')->success();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             flash('Не удалось выполнить проверку')->error();
             return back();
         }
