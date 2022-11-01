@@ -6,13 +6,11 @@ use Carbon\Carbon;
 use DiDom\Document;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Illuminate\Support\Facades\View;
 
 class UrlController extends Controller
 {
@@ -29,7 +27,7 @@ class UrlController extends Controller
         return view('urls', compact('urls', 'lastCheck'));
     }
 
-    public function store(Request $request): RedirectResponse|Response
+    public function store(Request $request)
     {
 
         $validator = Validator::make($request->all(), [
@@ -38,7 +36,7 @@ class UrlController extends Controller
 
         if ($validator->fails()) {
             $validator = $validator->errors();
-            return \response()->view('index', ['validator' => $validator, 'url' => $request->input('url.name')], 422);
+            return response(View::make('index', ['error' => $validator, 'url' => $request->input('url.name')]), 422);
         }
 
         $parsedUrl = parse_url($request->input('url.name'));

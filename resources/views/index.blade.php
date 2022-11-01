@@ -10,8 +10,8 @@
                         @csrf
                         <div class="col-8">
 
-                                <input type="text" name="url[name]" value="{{$url ?? ''}}" class="form-control form-control-lg @if(isset($validator)) is-invalid @endif" placeholder="https://www.example.com">
-                                @if(isset($validator))
+                                <input type="text" name="url[name]" value="{{$url ?? ''}}" class="form-control form-control-lg @if(isset($error)) is-invalid @endif" placeholder="https://www.example.com">
+                                @if(isset($error))
                                 <div class="invalid-feedback">
                                     Некорректный URL
                                 </div>
