@@ -7,15 +7,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
-class UrlCheckTest extends TestCase
+class UrlCheckControllerTest extends TestCase
 {
     protected int $id;
-
+    protected string $date;
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->id = DB::table('urls')->insertGetId(['name' => 'https://www.mail.ru', 'created_at' => Carbon::now()]);
+        $this->date = Carbon::now();
+        $this->id = DB::table('urls')->insertGetId(['name' => 'https://www.mail.ru', 'created_at' => $this->date]);
     }
 
     public function testCheck()
@@ -29,10 +29,11 @@ class UrlCheckTest extends TestCase
             'title' => 'Анализатор страниц',
             'description' => 'Description',
             'url_id' => $this->id,
-            'status_code' => 200
+            'status_code' => 200,
+            'created_at' => $this->date
         ];
 
-        $response = $this->post(route('url.check', $this->id));
+        $response = $this->post(route('checks.store', $this->id));
         $response->assertStatus(302);
         $response->assertSessionHasNoErrors();
         $this->assertDatabaseHas('url_checks', $expectedData);
