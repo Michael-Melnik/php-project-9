@@ -31,7 +31,7 @@ class UrlCheckController extends Controller
                 'created_at' => Carbon::now()->toDateTimeString()
             ]);
             flash('Страница успешно проверена')->success();
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             flash('Не удалось выполнить проверку')->error();
             return back();
         }
