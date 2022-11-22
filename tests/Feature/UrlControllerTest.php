@@ -9,12 +9,14 @@ use Illuminate\Support\Facades\DB;
 class UrlControllerTest extends TestCase
 {
     protected int $id;
+    protected string $nameUrl;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->id = DB::table('urls')->insertGetId(['name' => 'https://www.yandex.ru', 'created_at' => Carbon::now()]);
+        $db = DB::table('urls');
+        $this->id = $db->insertGetId(['name' => 'https://www.yandex.ru', 'created_at' => Carbon::now()]);
+        $this->nameUrl = $db->find($this->id)->name;
     }
 
     public function testUrlsRequest()
@@ -58,8 +60,7 @@ class UrlControllerTest extends TestCase
     {
         $response = $this->get(route('urls.show', $this->id));
         $response->assertOk();
-        $nameUrl = DB::table('urls')->find($this->id)->name;
-        $response->assertSee($nameUrl);
+        $response->assertSee($this->nameUrl);
         $response->assertViewIs('show');
     }
 }

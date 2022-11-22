@@ -10,12 +10,16 @@ use Tests\TestCase;
 class UrlCheckControllerTest extends TestCase
 {
     protected int $id;
-    protected string $date;
+    protected string $dateCreate;
+
     protected function setUp(): void
     {
         parent::setUp();
-        $this->date = Carbon::now();
-        $this->id = DB::table('urls')->insertGetId(['name' => 'https://www.mail.ru', 'created_at' => $this->date]);
+        $this->dateCreate = Carbon::now();
+        $this->id = DB::table('urls')->insertGetId([
+            'name' => 'https://www.mail.ru',
+            'created_at' => $this->dateCreate
+        ]);
     }
 
     public function testCheck()
@@ -30,7 +34,7 @@ class UrlCheckControllerTest extends TestCase
             'description' => 'Description',
             'url_id' => $this->id,
             'status_code' => 200,
-            'created_at' => $this->date
+            'created_at' => $this->dateCreate
         ];
 
         $response = $this->post(route('checks.store', $this->id));
